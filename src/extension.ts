@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 
 export function activate(context: vscode.ExtensionContext) {
   let disposable = vscode.commands.registerCommand(
-    "extension.makeMultiLineComment",
+    "easycomments.makeMultiLineComment",
     () => {
       const editor = vscode.window.activeTextEditor;
       if (!editor) {
@@ -73,7 +73,7 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   let disposable2 = vscode.commands.registerCommand(
-    "extension.makeSingleLineComment",
+    "easycomments.makeSingleLineComment",
     () => {
       const editor = vscode.window.activeTextEditor;
       if (!editor) {
@@ -128,6 +128,20 @@ export function activate(context: vscode.ExtensionContext) {
         racket: { start: "; ", type: "line" },
         scheme: { start: "; ", type: "line" },
       };
+
+      const { start } = commentSyntax[languageId] || {
+        start: "// ",
+        type: "line",
+      };
+
+      const commentedText = selectedText
+        .split("\n")
+        .map((line) => `${start}${line}`)
+        .join("\n");
+
+      editor.edit((editBuilder) => {
+        editBuilder.replace(selection, commentedText);
+      });
     }
   );
 
